@@ -10,8 +10,6 @@ const growth = {
   sumPoint: 0, // 总矿石数
   contCount: 0, // 连续签到天数
   sumCount: 0, // 累计签到天数
-  dippedLucky: false, // 是否沾喜气
-  dipValue: 0, // 幸运值
   luckyValue: 0, // 总幸运值
   freeCount: 0, // 免费抽奖次数
   freeDrawed: false, // 是否免费抽奖
@@ -27,21 +25,18 @@ ${growth.checkedIn ? `签到 +${growth.incrPoint} 矿石` : '今日已签到'}
 当前矿石数 ${growth.sumPoint}
 连续签到天数 ${growth.contCount}
 累计签到天数 ${growth.sumCount}
-${growth.dippedLucky ? '今日已经沾过喜气' : `沾喜气 +${growth.dipValue} 幸运值`}
 当前幸运值 ${growth.luckyValue}
 免费抽奖次数 ${growth.freeCount}
 ${growth.freeDrawed ? `恭喜抽中 ${growth.lotteryName}` : '今日已免费抽奖'}
-${growth.collectedBug ? `收集 Bug +${growth.collectBugCount}` : '暂无可收集 Bug'}
 `.trim()
 }
 
 const main = async () => {
-  const juejin = new Juejin()
+const juejin = new Juejin()
 
   // 登录
   try {
     await juejin.login(COOKIE)
-
     growth.userName = juejin.user.user_name
   } catch {
     throw new Error('登录失败, 请尝试更新 Cookies')
@@ -49,7 +44,6 @@ const main = async () => {
 
   // 签到
   const checkIn = await juejin.getTodayStatus()
-
   if (!checkIn) {
     const checkInResult = await juejin.checkIn()
 
@@ -59,10 +53,8 @@ const main = async () => {
 
   // 签到天数
   const counts = await juejin.getCounts()
-
   growth.contCount = counts.cont_count
   growth.sumCount = counts.sum_count
-
 
   // 免费抽奖
   const lotteryConfig = await juejin.getLotteryConfig()
@@ -77,7 +69,6 @@ const main = async () => {
 
   // 当前矿石数
   growth.sumPoint = await juejin.getCurrentPoint()
-
 
   pushMessage({
     type: 'info',
