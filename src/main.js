@@ -31,25 +31,14 @@ ${growth.freeDrawed ? `恭喜抽中 ${growth.lotteryName}` : '今日已免费抽
 `.trim()
 }
 
-//增加重试机制[liyk]
-const retry = async (fn, retries = 3) => {
-    for (let i = 0; i < retries; i++) {
-        try {
-            return await fn();
-        } catch (error) {
-            if (i === retries - 1) throw error;
-            await wait(getRandomArbitrary(1000, 3000)); // 等待一段随机时间再重试
-        }
-    }
-};
-
 const main = async () => {
   const juejin = new Juejin()
 
   // 登录
   try {
-    await retry(() => juejin.login(COOKIE));
-    growth.userName = juejin.user.user_name;
+    await juejin.login(COOKIE)
+
+    growth.userName = juejin.user.user_name
   } catch {
     throw new Error('登录失败, 请尝试更新 Cookies')
   }
