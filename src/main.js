@@ -63,18 +63,6 @@ const main = async () => {
   growth.contCount = counts.cont_count
   growth.sumCount = counts.sum_count
 
-  // 沾喜气
-  const lotteryHistory = await juejin.getLotteryHistory()
-  const lotteries = lotteryHistory.lotteries || []
-
-  if (lotteries.length > 0) {
-    const [firstLottery] = lotteries
-    const dipLuckyResult = await juejin.dipLucky(firstLottery.history_id)
-
-    growth.dippedLucky = dipLuckyResult.has_dip
-    growth.dipValue = dipLuckyResult.dip_value
-    growth.luckyValue = dipLuckyResult.total_value
-  }
 
   // 免费抽奖
   const lotteryConfig = await juejin.getLotteryConfig()
@@ -90,25 +78,6 @@ const main = async () => {
   // 当前矿石数
   growth.sumPoint = await juejin.getCurrentPoint()
 
-  // BugFix
-  const notCollectBug = await juejin.getNotCollectBug()
-
-  if (notCollectBug.length > 0) {
-    const requests = notCollectBug.map(bug => {
-      return async () => {
-        await juejin.collectBug(bug)
-        await wait(getRandomArbitrary(1000, 1500))
-      }
-    })
-
-    for (const request of requests) {
-      await request()
-
-      growth.collectBugCount++
-    }
-
-    growth.collectedBug = true
-  }
 
   pushMessage({
     type: 'info',
